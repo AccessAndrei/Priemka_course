@@ -7,10 +7,6 @@ class Application(tk.Tk):
         self.title("Приемная комиссия РУТ(МИИТ)")
         self.geometry("800x600")
         self.resizable(False, False)
-
-        self.create_widgets()
-
-    def create_widgets(self):
         self.label_login = tk.Label(self, text="Логин", font="Consolas 15")
         self.label_login.pack(anchor=tk.CENTER, pady=30)
         self.entry_log_in = tk.Entry(self, width=50, font="Consolas 15", bd=3)
@@ -57,10 +53,6 @@ class WindowAuthorization(tk.Toplevel):
         super().__init__(master)
         self.title("Приемная комиссия РУТ(МИИТ)")
         self.geometry("800x600")
-
-        self.create_widgets()
-
-    def create_widgets(self):
         self.name_label = tk.Label(self, text="Имя:")
         self.name_label.pack(anchor=tk.CENTER)
         self.name_entry = tk.Entry(self)
