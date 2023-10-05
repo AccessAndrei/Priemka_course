@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import sqlite3 as sq
+from tkinter import messagebox
 
 class Application(tk.Tk):
     def __init__(self):
@@ -19,7 +21,7 @@ class Application(tk.Tk):
 
         self.button_enter = tk.Button(self, text="Войти", font="Consolas 15", relief=tk.GROOVE, bd=5, bg="#B3E5FC",
                                       fg="white", activebackground="#B3E5FC", activeforeground="white",
-                                      command=self.get_text)
+                                      command=self.login)
         self.button_enter.pack(anchor=tk.CENTER, pady=30)
 
         self.button_authorization = tk.Button(self, text="Регистрация", font="Consolas 15", relief=tk.GROOVE, bd=5,
@@ -33,12 +35,23 @@ class Application(tk.Tk):
     def exit_application(self):
         self.destroy()
 
-    def get_text(self):
-        text1 = self.entry_log_in.get()
-        text2 = self.entry_pass_in.get()
-        data.append(text1)
-        data.append(text2)
-        print(data)
+    def login(self):
+        login = self.entry_log_in.get()
+        password = self.entry_pass_in.get()
+        try:
+            db = sq.connect('../database/priemka.db')
+            cursor = db.cursor()
+            cursor.execute("SELECT login, password FROM users WHERE login = ? AND password = ?", [login, password])
+            if (login, password) in cursor.fetchall():
+                print('success')
+            else:
+                print("неверный логин или пароль")
+
+        except sq.Error as e:
+            print(e)
+        finally:
+            cursor.close()
+            db.close()
 
     def open_window_authorization(self):
         self.withdraw()  # Скрываем текущее окно
@@ -87,24 +100,34 @@ class WindowAuthorization(tk.Toplevel):
         self.button_authorization.pack(anchor=tk.CENTER, pady=30)
 
 
-    def register(self):
-        text1 = self.name_entry.get()
-        text2 = self.surname_entry.get()
-        text3 = self.status_choice.get()
-        text4 = self.login_entry.get()
-        text5 = self.password_entry.get()
-        data.append(text1)
-        data.append(text2)
-        data.append(text3)
-        data.append(text4)
-        data.append(text5)
-        print(data)
-        alldata.append(data)
-        print(alldata)
-        data.clear()
+    def registration(self):
+        name = self.name_entry.get()
+        surname = self.surname_entry.get()
+        fullname = name+" "+ surname
+        status = self.status_choice.get()
+        login = self.login_entry.get()
+        password = self.password_entry.get()
+        try:
+            db = sq.connect('../database/priemka.db')
+            cursor = db.cursor()
+            cursor.execute("""
+            SELECT login FROM users WHERE login = ?
+            """, [login])
+            if cursor.fetchone() is None:
+                cursor.execute("INSERT INTO users(login, fullname, status, password) VALUES (?,?,?,?)", [login, fullname,status, password])
+                db.commit()
+            else:
+                self.login_entry.config(bg="red")
+                messagebox.showerror(text="Такой логин уже существует", fg="red")
+                self.registration()
+        except sq.Error as e:
+            print(e)
+        finally:
+            cursor.close()
+            db.close()
 
     def register_and_return(self):
-        self.register()  # Регистрируем пользователя
+        self.registration()  # Регистрируем пользователя
         self.destroy()
         self.master.show_main_window()
 
