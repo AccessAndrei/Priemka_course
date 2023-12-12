@@ -3,12 +3,14 @@ import sqlite3 as sq
 from tkinter import messagebox
 import Admin
 import Registration
-
+from src import Applicants
+from src import Secretary
 
 
 class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
+
         self.label_login = tk.Label(self, text="Логин", font="Consolas 15")
         self.label_login.pack(anchor=tk.CENTER, pady=30)
         self.entry_log_in = tk.Entry(self, width=50, font="Consolas 15", bd=3)
@@ -41,13 +43,20 @@ class StartPage(tk.Frame):
             cursor.execute("SELECT login, password, status FROM users WHERE login = ? AND password = ?", [login, password])
             data = cursor.fetchall()
             print(data)
-            if login in data[0][0] and password in data[0][1]:
-                if data[0][2] == "Администратор":
-                    self.master.switch_frame(Admin.AdminFrame)
+            if data:
+                if login in data[0][0] and password in data[0][1]:
+                    if data[0][2] == "Администратор":
+                        self.master.switch_frame(Admin.AdminFrame)
+                    elif data[0][2] == "Аббитуриент":
+                        cursor.execute("SELECT id FROM users WHERE login = ? AND password = ?", [login, password])
+                        self.master.switch_frame(Applicants.ApplicantsFrame, cursor.fetchone()[0])
+                    elif data[0][2] == "Секретарь":
+                        self.master.switch_frame(Secretary.Secretary)
+                    else:
+                        print("неверный логин или пароль")
+                        self.show_error_message("Ошибка", "Неверный логин или пароль")
             else:
-                print("неверный логин или пароль")
-                self.show_error_message("Ошибка", "Неверный логин или пароль")
-
+                messagebox.showerror("Ошибка", "Неверный логин или пароль")
         except sq.Error as e:
             print(e)
         finally:

@@ -14,15 +14,29 @@ class DataBase:
             password TEXT
             )""")
             self.cur.execute("""CREATE TABLE IF NOT EXISTS applicants(
-                user_id INTEGER,
+                applicant_id INTEGER UNIQUE,
                 attestat VARCHAR(20),
                 sub1 INTEGER,
                 sub2 INTEGER,
                 sub3 INTEGER,
-                state TEXT,
-                FOREIGN KEY (user_id) REFERENCES users(id)
+                original INTEGER,
+                FOREIGN KEY (applicant_id) REFERENCES users(id)
             )""")
-            attestat1 = "018 56789"
+            self.cur.execute("""CREATE TABLE IF NOT EXISTS directions(
+                direction_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                num_of_direction TEXT,
+                name TEXT,
+                amount int
+            )""")
+            self.cur.execute("""CREATE TABLE IF NOT EXISTS admission_results(
+                applicant_id INTEGER,
+                direction_id INTEGER,
+                checked INTEGER,
+                FOREIGN KEY (applicant_id) REFERENCES users(id),
+                FOREIGN KEY (direction_id) REFERENCES directions(direction_id)
+            )""")
+
+            #attestat1 = "018 56789"
 
 
 

@@ -22,7 +22,7 @@ class PageOne(tk.Frame):
         self.status_label = tk.Label(self, text="Статус:")
         self.status_label.pack(anchor=tk.CENTER)
         self.status_choice = ttk.Combobox(self, values=(
-            "Аббитуриент", "Секретарь", "Служащий приёмной комиссии", "Администратор"), state="readonly")
+            "Аббитуриент", "Секретарь", "Администратор"), state="readonly")
         self.status_choice.pack(anchor=tk.CENTER)
 
         self.login_label = tk.Label(self, text="Логин:")
@@ -41,7 +41,7 @@ class PageOne(tk.Frame):
                                               activebackground="#B3E5FC", activeforeground="white",
                                               command=self.register_and_return)
         self.button_authorization.pack(anchor=tk.CENTER, pady=30)
-        self.button_exit = tk.Button(self, text="Выйти", font="Consolas 15", command=master.destroy)
+        self.button_exit = tk.Button(self, text="Выйти", font="Consolas 15", command=lambda: master.switch_frame(Login.StartPage))
         self.button_exit.pack(anchor=tk.S, pady=50)
 
     def register_and_return(self):
